@@ -8,18 +8,28 @@ I’m documenting my learning journey with a focus on:
 - 🧩 Clean Markdown formatting for recruiter visibility
 
 ---
-✅ **Status: Intro Section Completed**
+## 📌 Learning Progress – Machine Learning Zoomcamp
 
-I’ve completed the **Introduction module** of the Machine Learning Zoomcamp.  
-This section covered:
-
-- What Machine Learning is  
+✔️ **Intro Section Completed**  
+Key learnings:  
+- What Machine Learning is (and isn’t)  
 - Differences between ML, RL, rule-based systems, and traditional programming  
-- The CRISP-DM framework  
+- The CRISP-DM framework for ML projects  
 - Model selection and data splitting (train/validation/test)  
-- Environment setup for ML workflows  
+- Setting up the ML environment  
 
-📝 All notes are written in plain language and structured for easy understanding — even for those new to ML.
+✔️ **Module 2 – Regression Completed**  
+Key learnings:  
+- Preparing and cleaning data with Pandas & NumPy  
+- Exploratory Data Analysis (EDA) with Seaborn/Matplotlib  
+- Building proper train/validation/test splits for fair evaluation  
+- Linear regression theory and vectorized implementation  
+- Feature engineering (numerical + categorical)  
+- Evaluating models with RMSE  
+- Regularization and tuning for better performance  
+- Using the trained model for predictions  
+
+⬜ **Module 3 – Classification (next up)**  
 
 
 
