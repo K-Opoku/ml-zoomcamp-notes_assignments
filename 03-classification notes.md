@@ -1,183 +1,157 @@
-# Module 3: Classification – Churn Prediction Teaching Notebook
+# 🧑‍💻 Machine Learning Zoomcamp – Module 3: Classification
+This module introduces classification problems, where the goal is to predict categories (e.g., churn vs. no churn, spam vs. not spam) instead of continuous values (like in regression). We’ll use a customer churn prediction project as the running example.
 
-This is a note i made after completing the classification section of the ml zoomcamp
+##  3.1 Churn Prediction Project
+Problem setup: Predict whether a customer will churn (leave the service).
 
----
-
-## 1. Introduction & Setup
-
-Classification is about predicting discrete labels (e.g. churn vs non-churn).  
-In this section we :
-
-- Loaded and cleaned data  
-- Explored features  
-- Computed feature importance  
-- Encoded categorical variables  
-- Trained logistic regression  
-- Interpreted model results  
+Type of ML task: Binary classification (two possible outcomes: churn = 1, no churn = 0).
 
 
 
-```python
-import pandas as pd
-import numpy as np
+##  3.2 Data Preparation
+The data preparation is very similar to regression. We clean  column names, check missing values, and ensure correct data types to understand the dataset better.
 
+Target variable: churn (1 = churned, 0 = stayed).
+
+Features:
+
+Numerical: tenure, monthly charges, total charges.
+
+Categorical: gender, contract type, payment method.
+
+python
+df.columns = df.columns.str.lower().str.replace(' ', '_')
+df['churn'] = (df.churn == 'yes').astype(int)
+## 3.3 Validation Framework
+
+At validation framework we split data into train/validation/test sets in a ratio of 60-20-20 just like it was done in regression. In this module is when i discovered how to perform the data split using scikit learn because in the previous module(Regression) we focused on how to perform the manually for better and deep understanding of the whole process.
+**Note** After splittiv and getting the targets for the split, the target should be deleted from the dataframe split. This should be ensured to prevent leakage.
+
+
+
+python
 from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelEncoder
-from sklearn.feature_selection import mutual_info_classif
-2. Load & Prepare Data
-python
-Copy code
-# Download / load the churn dataset
-!wget https://…/churn.csv
-df = pd.read_csv("churn.csv")
-
-# Normalize column names
-df.columns = df.columns.str.lower().str.replace(" ", "_")
-
-# Convert target to binary
-df["churn"] = (df["churn"] == "yes").astype(int)
-
-# Handle missing values if needed
-# For example:
-# df["some_col"] = pd.to_numeric(df["some_col"], errors="coerce")
-# df = df.fillna(0)
-
-df.head().T
-We checked:
-
-df.dtypes
-
-df.isna().sum()
-
-Value counts of churn
-
-3. Validation Framework
-We split the data into train / validation / test using  60-20-20 ratio.
-
-python
 
 df_full_train, df_test = train_test_split(df, test_size=0.2, random_state=1)
 df_train, df_val = train_test_split(df_full_train, test_size=0.25, random_state=1)
-# → train = 60%, val = 20%, test = 20%
+## 3.4 Exploratory Data Analysis (EDA)
+Churn rate: % of customers who churned.
 
-y_train = df_train["churn"].values
-y_val = df_val["churn"].values
-y_test = df_test["churn"].values
+Feature distributions: Look at histograms and churn rates across categories.
 
-drop_cols = ["churn", "customer_id"]
-X_train = df_train.drop(columns=drop_cols)
-X_val = df_val.drop(columns=drop_cols)
-X_test = df_test.drop(columns=drop_cols)
-4. Exploratory Data Analysis (EDA)
-We explored our features and target:
+Insights:
 
-df_train.describe()
+Month‑to‑month contracts → higher churn.
 
-Churn distribution: df_train["churn"].value_counts(normalize=True)
+Longer tenure → lower churn.
 
-Categorical feature counts: df_train["some_cat"].value_counts()
+Electronic check → higher churn.
 
-Crosstabs:
+## 3.5 Feature Importance: Churn Rate & Risk Ratio
+Churn rate: % of churners in a group.
 
-python
-pd.crosstab(df_train["some_cat"], df_train["churn"])
-For numeric features: histograms, boxplots, scatter plots
+Risk ratio: Group churn rate ÷ overall churn rate.
+**This helps identify high‑risk groups.**
 
-Our insight goal was to identify feature levels or numeric ranges that differed for churners vs non-churners.
+## 3.6 Feature Importance: Mutual Information
+Measures how much knowing a feature reduces uncertainty about the target.
 
-5. Feature Importance
-5.1 Churn Rate & Risk Ratio
-python
-Copy code
-churn_rate = df_train.groupby("cat")["churn"].mean().sort_values()
-overall = df_train["churn"].mean()
-risk_ratio = churn_rate / overall
-Churn rate per level
+Works for categorical features.
 
-Risk ratio: relative risk compared to overall churn
-
-5.2 Mutual Information
-python
-Copy code
-def mutual_info_series(series, y):
-    le = LabelEncoder()
-    s = le.fit_transform(series)
-    return mutual_info_classif(s.reshape(-1, 1), y, discrete_features=True)[0]
-
-for c in categorical_cols:
-    print(c, mutual_info_series(df_train[c], y_train))
-A higher mutual information score implied stronger dependence with the target.
-
-5.3 Correlation
-For numeric features:
+Range: 0 (no relation) → higher values (stronger relation).
 
 python
-Copy code
-corr = df_train[num_cols + ["churn"]].corr()["churn"].sort_values(ascending=False)
-print(corr)
-This gave us a sense of linear association (bearing in mind limitations with a binary target).
+from sklearn.metrics import mutual_info_score
 
-6. Encoding Categorical Variables (One-Hot using DictVectorizer)
+mutual_info_score(df_train.contract, df_train.churn)
+## 3.7 Feature Importance: Correlation
+There are two uses of correlation in classification:
+
+(a) Correlation with the Target
+Treat churn as 0/1 and compute Pearson correlation with numeric features.
+
+Example: tenure is negatively correlated with churn.
+
 python
-Copy code
-def prepare_dataset(df, categorical, numerical, dv=None, fit_dv=False):
-    dicts = df[categorical + numerical].to_dict(orient="records")
-    if fit_dv:
-        dv = DictVectorizer(sparse=False)
-        X = dv.fit_transform(dicts)
-    else:
-        X = dv.transform(dicts)
-    return X, dv
+df_train[['tenure', 'monthlycharges', 'churn']].corr()
+(b) Correlation Among Features
+Compute correlation matrix across all numeric features.
 
-# Suppose chosen features:
-categorical = ["some_cat", "another_cat"]
-numerical = ["num1", "num2"]
+Detects multicollinearity (redundant features).
 
-X_train, dv = prepare_dataset(df_train, categorical, numerical, dv=None, fit_dv=True)
-X_val, _ = prepare_dataset(df_val, categorical, numerical, dv=dv, fit_dv=False)
+Example: total_charges is highly correlated with tenure × monthly_charges.
 
-# Optionally inspect:
-feature_names = dv.get_feature_names_out()
-print(feature_names)
-7. Training Logistic Regression
 python
-Copy code
-model = LogisticRegression(solver="liblinear", C=1.0, random_state=1)
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+corr_matrix = df_train.corr()
+plt.figure(figsize=(8,6))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+plt.show()
+**Summary:**
+
+Correlation with target → tells us which features are predictive.
+
+Correlation among features → tells us which features are redundant.
+
+## 3.8 One‑Hot Encoding (OHE)
+Convert categorical variables into binary columns. Thus is done so that the model can understand and train on our data.
+
+Example: contract = month-to-month → [1,0,0].
+
+python
+from sklearn.feature_extraction import DictVectorizer
+
+dv = DictVectorizer(sparse=False)
+train_dicts = df_train[categorical + numerical].to_dict(orient='records')
+X_train = dv.fit_transform(train_dicts)
+## 3.9 Logistic Regression
+Predicts probabilities of churn.
+
+Uses the sigmoid function to map log‑odds to [0,1].
+
+python
+from sklearn.linear_model import LogisticRegression
+
+model = LogisticRegression()
 model.fit(X_train, y_train)
+## 3.10 Model Interpretation
+Coefficients: Positive → increases churn probability, Negative → decreases churn probability.
 
-y_pred = model.predict(X_val)
-y_pred_proba = model.predict_proba(X_val)[:, 1]
-We inspected coefficients:
+Logistic regression is interpretable and business‑friendly.
+
+## 3.11 Using the Model
+Predict churn probability for new customers.
+
+Adjust decision threshold (default = 0.5) depending on business needs.
 
 python
-Copy code
-coef = model.coef_[0]
-sorted_idx = coef.argsort()
-for idx in sorted_idx:
-    print(feature_names[idx], coef[idx])
-Positive coefficient → increased churn probability
+y_pred = model.predict_proba(X_val)[:,1]
+## 3.12 Summary
+Classification predicts categories, not continuous values.
 
-Negative → decreased churn probability
+We explored:
 
-8. Retrain on Full Data & Predict on Test
-python
-Copy code
-X_full_train, dv = prepare_dataset(
-    pd.concat([df_train, df_val]),
-    categorical,
-    numerical,
-    dv=None,
-    fit_dv=True
-)
-y_full_train = pd.concat([df_train["churn"], df_val["churn"]]).values
+Churn prediction setup
 
-model = LogisticRegression(solver="liblinear", C=1.0, random_state=1)
-model.fit(X_full_train, y_full_train)
+Validation framework
 
-X_test_enc, _ = prepare_dataset(df_test, categorical, numerical, dv=dv, fit_dv=False)
-y_test_pred = model.predict(X_test_enc)
-y_test_proba = model.predict_proba(X_test_enc)[:, 1]
-Then our pipeline was ready for evaluation in the next module.
+EDA & feature importance
+
+Correlation (with target & among features)
+
+One‑hot encoding
+
+Logistic regression
+
+Model interpretation & usage
+
+## Key Takeaways
+Classification is about probabilities, not just labels.
+
+Logistic regression is a baseline model: simple, interpretable, effective.
+
+Correlation has two roles: feature importance (with target) and redundancy detection (among features).
+
+Always validate models with proper splits.
