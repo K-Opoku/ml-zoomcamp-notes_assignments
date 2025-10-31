@@ -1,4 +1,4 @@
-# 🧠 Machine Learning Zoomcamp – Conceptual Notes & Assignments
+🧠 Machine Learning Zoomcamp – Conceptual Notes & Assignments
 
 This repository contains my personal notes, summaries, and assignments from the Machine Learning Zoomcamp course by DataTalksClub.
 
@@ -12,22 +12,16 @@ I’m documenting my learning journey with a focus on:
 
 ## 📌 Learning Progress – Machine Learning Zoomcamp
 
----
-
-### ✔️ Intro Section Completed
-
-**Key learnings**:
+### ✔️ Intro Section Completed  
+Key learnings:
 - What Machine Learning is (and isn’t)
 - Differences between ML, RL, rule-based systems, and traditional programming
 - The CRISP-DM framework for ML projects
 - Model selection and data splitting (train/validation/test)
 - Setting up the ML environment
 
----
-
-### ✔️ Module 2 – Regression Completed
-
-**Key learnings**:
+### ✔️ Module 2 – Regression Completed  
+Key learnings:
 - Preparing and cleaning data with Pandas & NumPy
 - Exploratory Data Analysis (EDA) with Seaborn/Matplotlib
 - Building proper train/validation/test splits for fair evaluation
@@ -37,11 +31,8 @@ I’m documenting my learning journey with a focus on:
 - Regularization and tuning for better performance
 - Using the trained model for predictions
 
----
-
-### ✔️ Module 3 – Classification Completed
-
-**Key learnings**:
+### ✔️ Module 3 – Classification Completed  
+Key learnings:
 - Binary classification using logistic regression
 - Encoding categorical features and scaling numerical ones
 - Using `.predict_proba()` vs `.predict()` for decision-making
@@ -51,11 +42,8 @@ I’m documenting my learning journey with a focus on:
 - Saving and loading models for deployment
 - Preparing for evaluation with proper data splits and preprocessing discipline
 
----
-
-### ✔️ Module 4 – Evaluation Completed
-
-**Key learnings**:
+### ✔️ Module 4 – Evaluation Completed  
+Key learnings:
 - Why accuracy alone is misleading in imbalanced datasets
 - Using `DummyClassifier` to establish a baseline
 - Understanding the confusion matrix: TP, FP, TN, FN
@@ -68,15 +56,18 @@ I’m documenting my learning journey with a focus on:
 - Interpreting mean and standard deviation of AUC across folds
 - Documenting evaluation results with metrics, plots, and threshold decisions
 
----
+### ✔️ Module 5 – Deployment Completed  
+📁 Folder: [`ML-zoomcamp_assignment-05--deployment`](./ML-zoomcamp_assignment-05--deployment)
 
-### ⬜ Module 5 – Coming Soon
+Key deliverables:
+- Containerized FastAPI app serving a churn prediction model
+- Dockerfile with uv integration for reproducible deployment
+- Locked dependencies using `uv.lock` and `pyproject.toml`
+- API test script for local validation
+- Model file and scoring logic packaged for production
 
-Stay tuned for:
-- Precision/recall tradeoffs in real-world deployment
-- Threshold tuning for business alignment
-- Model calibration and probability reliability
-- Advanced evaluation strategies for production readiness
-
----
-
+How to run:
+```bash
+docker build -t zoomcamp-score:local ML-zoomcamp_assignment-05--deployment
+docker run --rm -p 9696:9696 zoomcamp-score:local
+python ML-zoomcamp_assignment-05--deployment/test.py
