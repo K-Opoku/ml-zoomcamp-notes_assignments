@@ -155,7 +155,7 @@ docker run --rm -p 9696:9696 your-dockerhub-username/zoomcamp-score:1.0
 - **Reproducible setup:** `uv.lock` keeps dependency versions fixed.  
 - **Easy API:** FastAPI makes it simple to send data and get predictions.  
 - **Portable:** Docker makes sure it runs the same everywhere.  
-- **Professional:** A clean structure and documentation make this project ready for clients or recruiters.
+  
 
 ---
 
