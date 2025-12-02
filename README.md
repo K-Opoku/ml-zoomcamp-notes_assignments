@@ -71,3 +71,15 @@ How to run:
 docker build -t zoomcamp-score:local ML-zoomcamp_assignment-05--deployment
 docker run --rm -p 9696:9696 zoomcamp-score:local
 python ML-zoomcamp_assignment-05--deployment/test.py
+```
+### ✔️ Module 8 – Deep Learning Completed
+Key learnings:
+- **CNN Fundamentals:** Understanding why Dense networks fail on images and how Convolutional layers (filters/kernels) preserve spatial data.
+- **Architecture Mechanics:** How Pooling layers (Max/Average) provide translation invariance and reduce computation.
+- **Transfer Learning:** Leveraging pre-trained models (Xception, ResNet50) trained on ImageNet to solve custom problems with less data.
+- **Implementation Frameworks:** Building and training models using both the Keras (Functional API) and PyTorch (Class-based) approaches.
+- **Data Preprocessing:** Managing image loading pipelines, resizing, and normalization for neural networks.
+- **Fighting Overfitting:**
+    - **Dropout:** Randomly deactivating neurons to force robust feature learning.
+    - **Data Augmentation:** Generating new training samples via rotation, flips, and shifts.
+- **Tuning Strategy:** Systematically tuning Learning Rate (LR), inner layer sizes, and using Checkpointing to save only the best model.
