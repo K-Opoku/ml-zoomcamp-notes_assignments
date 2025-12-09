@@ -83,3 +83,29 @@ Key learnings:
     - **Dropout:** Randomly deactivating neurons to force robust feature learning.
     - **Data Augmentation:** Generating new training samples via rotation, flips, and shifts.
 - **Tuning Strategy:** Systematically tuning Learning Rate (LR), inner layer sizes, and using Checkpointing to save only the best model.
+
+### ✔️ Module 9 – Serverless Deep Learning Completed
+📁 Folder: [`ML-zoomcamp_assignment-09--serverless`](./ML-zoomcamp_assignment-09--serverless)
+
+Key learnings:
+- **Serverless Architecture:** Understanding AWS Lambda, cold starts, and the cost/scaling benefits over traditional servers.
+- **Model Optimization:** Converting heavy Keras/TensorFlow models into lightweight **TFLite** or **ONNX** formats for faster inference.
+- **Lambda-Ready Containers:** Building Docker images based on Amazon Linux to match the AWS production environment.
+- **Cross-Platform Debugging:** Solving critical OS-level dependency conflicts (e.g., `glibc` versions for `onnxruntime` and `numpy`) between local dev (Windows/Python 3.12) and production (Linux/Python 3.10).
+- **Build Context Hygiene:** Optimizing Docker builds using `.dockerignore` to exclude large datasets and virtual environments.
+
+Key deliverables:
+- AWS Lambda function (`lambda_function.py`) capable of downloading and classifying images via URL.
+- Production-grade `Dockerfile` using multi-stage builds and `uv` for fast dependency installation.
+- `pyproject.toml` with pinned versions to ensure stability on Amazon Linux.
+
+How to run:
+```bash
+# Build the Lambda-compatible image
+docker build -t hair-classifier:v1 ML-zoomcamp_assignment-09--serverless
+
+# Run the container locally (emulating Lambda)
+docker run -it --rm -p 8080:8080 hair-classifier:v1
+
+# Test the endpoint
+python ML-zoomcamp_assignment-09--serverless/test.py
