@@ -65,6 +65,31 @@ When a user sends a request (e.g., via **API Gateway**), the data comes in as a 
 ### The Complete lambda_function.py
 This is the standard template for Computer Vision on Lambda.
 
+## 📝 PyTorch → NumPy/PIL Conversions (Lightweight Preprocessing)
+
+During deployment preparation, I replaced several PyTorch functions with pure NumPy/PIL equivalents to make the preprocessing pipeline lighter and avoid heavy dependencies.  
+This ensures the ONNX model can run smoothly in AWS Lambda or Docker without requiring `torch` or `torchvision`.
+
+### 🔄 Conversion Cheatsheet
+
+| Task                        | PyTorch Version                          | NumPy/PIL Version (Final)                  |
+|-----------------------------|------------------------------------------|--------------------------------------------|
+| Convert image to tensor     | `torch.tensor(np.array(img)).float()`<br>`transforms.ToTensor()(img)` | `np.array(img, dtype='float32')` |
+| Normalize with mean & std   | `transforms.Normalize(mean, std)(x)`     | `(x - np.array(MEAN, dtype='float32')) / np.array(STD, dtype='float32')` |
+| Add batch dimension         | `x.unsqueeze(0)`                         | `np.expand_dims(x, axis=0)` |
+| Resize image                | `transforms.Resize(target_size)(img)`    | `img.resize(target_size, Image.NEAREST)` |
+| Permute dimensions          | `x.permute(2,0,1)`                       | `x.transpose((2,0,1))` |
+| Force float type            | `x.float()`                              | `x.astype(np.float32)` |
+
+---
+
+### ✅ Why This Matters
+- **No PyTorch dependency** → smaller Docker/Lambda package size.  
+- **Lightweight preprocessing** → faster cold starts in AWS Lambda.  
+- **Reproducibility** → same math as PyTorch, but implemented manually with NumPy.  
+
+These swaps ensure the ONNX model runs consistently across environments without requiring the full PyTorch stack.
+
 ```python
 import numpy as np
 import onnxruntime as ort
